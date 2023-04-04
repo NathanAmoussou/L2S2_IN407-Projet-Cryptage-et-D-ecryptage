@@ -1,0 +1,24 @@
+import tkinter as tk
+
+test = "projet python"
+while " " in test:
+    test = test.replace(" ", "")
+
+
+class Sommet(object):
+    longueur = len(test)
+    def __init__(self, lettre):
+        self.lettre = lettre
+        self.occurence = test.count(lettre) / Sommet.longueur
+
+
+class ArbreB():
+    def __init__(self, racine, fils_gauche=None, fils_droit=None):
+        self.racine = racine
+        self.fils_gauche = fils_gauche
+        self.fils_droit = fils_droit
+        self.representation = []
+
+
+    def get_representation(self):
+        return []
