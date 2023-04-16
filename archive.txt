@@ -22,3 +22,175 @@ class ArbreB():
 
     def get_representation(self):
         return []
+
+
+
+------
+
+class Sommet(object):
+    def __init__(self, valeur, lettre = None):
+        self.valeur = valeur
+        self.lettre = lettre
+
+
+    def get_valeur(self):
+        pass
+
+
+class ArbreB(object):
+    def __init__(self, racine, gauche=None, droite=None):
+        self.racine = racine
+        self.gauche = gauche
+        self.droite = droite
+
+
+    def get_racine(self):
+        """Retourne un objet Sommet qui est la racine de l'arbre."""
+        if self.racine is None:
+            return Sommet(None)
+        else:
+            return self.racine
+
+
+    def get_gauche(self):
+        """Retourne un objet ArbreB qui est le sous-arbre gauche de l'arbre."""
+        if self.gauche is None:
+            return ArbreB(None)
+        else:
+            return self.gauche.get_racine()
+
+
+    def get_droit(self):
+        """Retourne un objet ArbreB qui est le sous-arbre droit de l'arbre."""
+        if self.droite is None:
+            return ArbreB(None)
+        else:
+            return self.droite.get_racine()
+
+
+    def inserer_sommet(self, sommet): # insère un arbre en fait
+        if sommet.racine.valeur < self.racine.valeur: # va à gauche
+            if self.gauche is None:
+                self.gauche = ArbreB(sommet)
+            else:
+                self.gauche.inserer_sommet(sommet)
+        else: # va à droite
+            if self.droite is None:
+                self.droite = ArbreB(sommet)
+            else:
+                self.droite.inserer_sommet(sommet)
+
+
+----
+
+
+
+class Sommet(object):
+    def __init__(self, valeur, lettre = None):
+        self.valeur = valeur
+        self.lettre = lettre
+
+
+    def get_valeur(self):
+        pass
+
+
+class ArbreB(object):
+    def __init__(self, racine, gauche=None, droite=None):
+        self.racine = racine
+        self.gauche = gauche
+        self.droite = droite
+
+
+    def get_racine(self):
+        """Retourne un objet Sommet qui est la racine de l'arbre."""
+        if self.racine is None:
+            return Sommet(None)
+        else:
+            return self.racine
+
+
+    def get_gauche(self):
+        """Retourne un objet ArbreB qui est le sous-arbre gauche de l'arbre."""
+        if self.gauche is None:
+            return ArbreB(None)
+        else:
+            return self.gauche.get_racine()
+
+
+    def get_droit(self):
+        """Retourne un objet ArbreB qui est le sous-arbre droit de l'arbre."""
+        if self.droite is None:
+            return ArbreB(None)
+        else:
+            return self.droite.get_racine()
+
+
+    def inserer_sommet(self, sommet): # insère un arbre en fait
+        if sommet.racine.valeur < self.racine.valeur: # va à gauche
+            if self.gauche is None:
+                self.gauche = ArbreB(sommet)
+            else:
+                self.gauche.inserer_sommet(sommet)
+        else: # va à droite
+            if self.droite is None:
+                self.droite = ArbreB(sommet)
+            else:
+                self.droite.inserer_sommet(sommet)
+
+
+# Tests
+# création de l'arbre
+a = ArbreB(Sommet(5, 'a'))
+
+b = ArbreB(Sommet(3, 'b'))
+
+c = ArbreB(Sommet(7, 'c'))
+
+d = ArbreB(Sommet(1, 'd'))
+
+b.inserer_sommet(d)
+
+a.inserer_sommet(b)
+
+a.inserer_sommet(c)
+
+# affichage des valeurs
+# a
+print(a.get_racine().valeur)
+print(a.get_racine().lettre)
+
+# a.g
+print(a.get_gauche().get_racine().valeur)
+print(a.get_gauche().get_racine().lettre)
+
+# a.d
+print(a.get_droit().get_racine().valeur)
+print(a.get_droit().get_racine().lettre)
+
+# b.g
+print(a.get_gauche().get_gauche().get_racine().valeur) # on appelle get_gauche() deux fois car on est dans un sous-arbre
+print(a.get_gauche().get_gauche().get_racine().lettre)
+
+# b.d
+print(a.get_gauche().get_droit().get_racine().valeur)
+print(a.get_gauche().get_droit().get_racine().lettre)
+
+# c.g
+print(a.get_droit().get_gauche().get_racine().valeur)
+print(a.get_droit().get_gauche().get_racine().lettre)
+
+# c.d
+print(a.get_droit().get_droit().get_racine().valeur)
+print(a.get_droit().get_droit().get_racine().lettre)
+
+# d.g
+print(a.get_gauche().get_gauche().get_gauche().get_racine().valeur)
+print(a.get_gauche().get_gauche().get_gauche().get_racine().lettre)
+
+# d.d
+print(a.get_gauche().get_gauche().get_droit().get_racine().valeur)
+print(a.get_gauche().get_gauche().get_droit().get_racine().lettre)
+
+# suppression de b
+a.supprimer_sommet(3)

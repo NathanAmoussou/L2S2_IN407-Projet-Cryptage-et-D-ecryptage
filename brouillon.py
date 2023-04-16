@@ -1,23 +1,49 @@
-"""from fonctions import *
+from fonctions import *
 
-sommets = {lettre for lettre in test}
+a = Sommet(5, 'a')
+b = Sommet(3, 'b')
+c = Sommet(7, 'c')
 
-sommets = [Sommet(lettre) for lettre in sommets]
+arbre_a = ArbreB(a)
+arbre_a.inserer_arbre(ArbreB(b))
+arbre_a.inserer_arbre(ArbreB(c))
 
-#for lettre in sommets:
-#    print(lettre.lettre, lettre.occurence)
+valeur = 4
 
-arbre_etape_1 = [ArbreB(sommet) for sommet in sommets]
+if valeur in arbre_a:
+    print(f"{valeur} est dans l'arbre")
+else:
+    print(f"{valeur} n'est pas dans l'arbre")
 
-def fusion(arbre_1, arbre_2):
-    racine = arbre_1.racine + arbre_2.racine
-    fils_gauche = arbre_1
-    fils_droit = arbre_2
-    return ArbreB(racine, fils_gauche, fils_droit)
-"""
 
-my_iter = iter([1, 2, 3])
-print(next(my_iter)) # 1
-print(next(my_iter)) # 2
-print(next(my_iter)) # 3
-print(next(my_iter, "abc")) # Erreur StopIteration
+#d = Sommet(4, 'd')
+#e = Sommet(2, 'e')
+#f = Sommet(8, 'f')
+#arbre_b = ArbreB(d)
+#arbre_b.inserer_arbre(ArbreB(e))
+#arbre_b.inserer_arbre(ArbreB(f))
+
+#arbre_a.fusion(arbre_b)
+
+#decomposition = arbre_a.decomposition()
+#for arbre in decomposition:
+#    print(arbre.valeur)
+
+#print(arbre_a.get_racine().valeur)
+#print(arbre_a.get_gauche().get_racine().valeur)
+#print(arbre_a.get_droit().get_racine().valeur)
+#print(arbre_a.get_gauche().get_gauche().get_racine().valeur)
+#print(arbre_a.get_gauche().get_droit().get_racine().valeur)
+#print(arbre_a.get_droit().get_droit().get_racine().valeur)
+
+#arbre_a.inserer_arbre(ArbreB(Sommet(4, 'd')))
+
+#arbre_a.supprimer_arbre(7)
+
+#print(arbre_a.get_racine().valeur)
+#print(arbre_a.get_gauche().get_droit().get_racine().lettre)
+#print(arbre_a.get_droit().get_racine().lettre))
+
+#arbre_a.modifier_etiquette_arbre(5, 7)
+#print(arbre_a.get_racine().valeur)
+#print(arbre_a.rechercher_element(4).get_racine().lettre)
