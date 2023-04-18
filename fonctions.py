@@ -44,7 +44,7 @@ class ArbreB(object):
         """
         return self.droite
     
-    def inserer_arbre(self, arbre):
+    def inserer_arbre(self, arbre): # inserer_sommet()
         """
         Insère un objet ArbreB dans l'arbre binaire de recherche.
         :param arbre: L'objet ArbreB à insérer dans l'arbre binaire de recherche.
@@ -60,7 +60,15 @@ class ArbreB(object):
             else:
                 self.droite.inserer_arbre(arbre)
 
-    def supprimer_arbre(self, valeur):
+    def __add__(self, arbre):
+        self.inserer_arbre(arbre)
+        return self
+    
+    def __iadd__(self, arbre):
+        self.inserer_arbre(arbre)
+        return self
+
+    def supprimer_arbre(self, valeur): # supprimer sommet
         """
         Supprime un objet ArbreB avec une valeur donnée de l'arbre binaire de recherche.
         :param valeur: La valeur de l'objet ArbreB à supprimer de l'arbre binaire de recherche.
@@ -87,6 +95,14 @@ class ArbreB(object):
             return self
         else:
             return self
+
+    def __sub__(self, valeur):
+        self.supprimer_arbre(valeur)
+        return self
+    
+    def __isub__(self, valeur):
+        self.supprimer_arbre(valeur)
+        return self
 
     def modifier_etiquette_arbre(self, valeur, nouvelle_valeur):
         """
@@ -146,6 +162,3 @@ class ArbreB(object):
         if self.droite is not None:
             elements.extend(self.droite.decomposition())
         return elements
-
-
-
