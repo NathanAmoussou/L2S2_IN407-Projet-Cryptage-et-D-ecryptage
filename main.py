@@ -1,11 +1,12 @@
+import tkinter as tk
+import math
+
 # PARTIE 1
 
 # Question 1.1 et 1.2
 
-import tkinter as tk
-
 class Sommet(object):
-    def __init__(self, valeur: float, lettre: int=None):
+    def __init__(self, valeur: float, lettre: str=None):
         """
         Initialise un objet Sommet avec une valeur et une lettre optionnelle.
         :param valeur: La valeur du sommet.
@@ -270,7 +271,7 @@ def test_arbre_binaire():
 # Question 1.4 - Développer une interface graphique pour la représentation de l'arbre binaire de recherche.
 
 class ArbreBinaire(tk.Canvas):
-    def __init__(self, master, arbre, *args, **kwargs):
+    def __init__(self, master, arbre, t=None, *args, **kwargs):
         """
         Constructeur de la classe ArbreBinaire.
         :param master: La fenêtre parente.
@@ -286,14 +287,22 @@ class ArbreBinaire(tk.Canvas):
         self.espacement_horiz = 50
         self.espacement_vert = 100
         self.positions = {}
+        self.t = t
 
     def afficher(self):
         """
         Affiche l'arbre binaire de recherche.
         """
-        self.delete(tk.ALL)
-        self.positions.clear()
-        self._afficher_sous_arbre(self.arbre, self.width / 2, 0, self.width / 4)
+        self.delete(tk.ALL) # Efface le contenu de la zone de dessin
+        self.positions.clear() # Vide le dictionnaire des positions
+        self._afficher_sous_arbre(self.arbre, self.width / 2, 0, self.width / 4) # Affiche le sous-arbre
+        x1, y1, x2, y2 = self.bbox(tk.ALL) # Récupère les coordonnées de la zone de dessin
+        self.configure(width=x2-x1+100, height=y2-y1+200) # Redimensionne la zone de dessin
+        self.xview_moveto((x1-50)/(x2-x1+100)) # Centre la zone de dessin
+        self.yview_moveto(0) # Place la zone de dessin en haut
+        chemins = trouver_chemins_feuilles(self.arbre, []) # Récupère les chemins des feuilles
+        texte = "Codage de Huffman : " + ''.join([str(chiffre) for lettre in self.t for chiffre in chemins[lettre]]) # Crée le texte à afficher
+        self.create_text(self.width / 2, y2 + 50, text=texte) # Affiche le texte
 
     def _afficher_sous_arbre(self, arbre, x, y, h):
         """
@@ -304,23 +313,108 @@ class ArbreBinaire(tk.Canvas):
         :param h: La hauteur du sous-arbre.
         :return: Le sous-arbre à afficher.
         """
-        if arbre is not None:
-            gauche = self._afficher_sous_arbre(arbre.gauche, x - h, y + self.espacement_vert, h / 2)
-            droite = self._afficher_sous_arbre(arbre.droite, x + h, y + self.espacement_vert, h / 2)
+        if arbre is not None: # Si l'arbre n'est pas vide
+            gauche = self._afficher_sous_arbre(arbre.gauche, x - h, y + self.espacement_vert, h / 2) # Affiche le sous-arbre gauche
+            droite = self._afficher_sous_arbre(arbre.droite, x + h, y + self.espacement_vert, h / 2) # Affiche le sous-arbre droit
             cercle = self.create_oval(x - self.diametre_cercle / 2, y, x + self.diametre_cercle / 2,
-                                      y + self.diametre_cercle, fill="white", width=2)
-            texte = self.create_text(x, y + self.diametre_cercle / 2, text=str(arbre.racine.valeur))
-            self.positions[arbre] = (x, y, cercle, texte)
-            if gauche is not None:
-                self.create_line(x, y + self.diametre_cercle / 2, gauche[0], gauche[1] + self.diametre_cercle / 2, width=2)
-            if droite is not None:
-                self.create_line(x, y + self.diametre_cercle / 2, droite[0], droite[1] + self.diametre_cercle / 2, width=2)
-            return x, y
-        else:
-            return None
-        
+                                    y + self.diametre_cercle, fill="white", width=2) # Crée le cercle
+            texte = self.create_text(x, y + self.diametre_cercle / 2,
+                                    text=("{:.2%}".format(arbre.racine.valeur), arbre.racine.lettre if arbre.racine.lettre is not None else "")) # Crée le texte
+            self.positions[arbre] = (x, y, cercle, texte) # Ajoute la position de l'arbre dans le dictionnaire
+            if gauche is not None: # Si le sous-arbre gauche n'est pas vide
+                angle = math.atan2(gauche[1] - (y + self.diametre_cercle / 2), gauche[0] - x) # Calcule l'angle de la ligne à tracer entre les deux sous-arbres (en radians)
+                x1 = x + (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point de départ
+                y1 = (y + self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point de départ
+                x2 = gauche[0] - (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point d'arrivée
+                y2 = gauche[1] + (self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point d'arrivée
+                self.create_line(x1, y1, x2, y2, width=2) # Trace la ligne entre les deux sous-arbres
+            if droite is not None: # Si le sous-arbre droit n'est pas vide
+                angle = math.atan2(droite[1] - (y + self.diametre_cercle / 2), droite[0] - x) # Calcule l'angle de la ligne à tracer entre les deux sous-arbres (en radians)
+                x1 = x + (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point de départ
+                y1 = (y + self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point de départ
+                x2 = droite[0] - (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point d'arrivée
+                y2 = droite[1] + (self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point d'arrivée
+                self.create_line(x1, y1, x2, y2, width=2) # Trace la ligne entre les deux sous-arbres
+            return x, y # Retourne la position de l'arbre
+        else: # Si l'arbre est vide
+            return None # Retourne None
 
-def test_interface_graphique():
+# PARTIE 2
+
+# Question 2.1 - Calcule du pourcentage d'occurence de chaque lettre dans un texte.
+
+def occurence(texte):
+    occurence = dict()
+    texte_list = list(texte.lower())
+    while " " in texte_list:
+        texte_list.remove(" ")
+    for lettre in set(texte_list):
+        occurence[lettre] = round((texte_list.count(lettre) / len(texte_list)), 2)
+        #occurence[lettre] = "{0:.2%}".format(round((texte_list.count(lettre) / len(texte_list)), 4))
+    return occurence
+
+# Question 2.2 - Construction d'un arbre binaire de cryptage.
+
+def construire_arbreB_Huffman(texte):
+    """ 
+    Construit un arbre binaire de cryptage à partir d'un texte. 
+    :param texte: Le texte à crypter.
+    :return: L'arbre binaire de cryptage.
+    """
+    # Création de la liste des sommets
+    dict_occurence = occurence(texte)
+    liste_sommets = []
+    for lettre, occ in dict_occurence.items():
+        liste_sommets.append(ArbreB(Sommet(occ, lettre)))
+    liste_sommets.sort(key=lambda arbre: arbre.get_racine().valeur)
+    # Construction de l'arbre de Huffman
+    while len(liste_sommets) > 1:
+        sommet_1 = min(liste_sommets, key=lambda arbre: arbre.get_racine().valeur)
+        liste_sommets.remove(sommet_1)
+        sommet_2 = min(liste_sommets, key=lambda arbre: arbre.get_racine().valeur)
+        liste_sommets.remove(sommet_2)
+        sommet_3 = ArbreB(Sommet(valeur=(sommet_1.get_racine().valeur + sommet_2.get_racine().valeur)),
+                          sommet_1, sommet_2)
+        liste_sommets.append(sommet_3)
+        liste_sommets.sort(key=lambda arbre: arbre.get_racine().valeur)
+    return liste_sommets[0]
+
+def trouver_chemins_feuilles(arbre, chemin):
+    """
+    Trouve les chemins de toutes les feuilles d'un arbre de Huffman.
+    :param arbre: L'arbre de Huffman.
+    :param chemin: Le chemin suivi pour arriver au sommet actuel.
+    :return: Un dictionnaire contenant les chemins des feuilles de l'arbre de Huffman.
+    """
+    if arbre is None:
+        return {}
+    if arbre.gauche is None and arbre.droite is None:
+        return {arbre.racine.lettre: chemin}
+    chemins = {}
+    chemins.update(trouver_chemins_feuilles(arbre.gauche, chemin + [0]))
+    chemins.update(trouver_chemins_feuilles(arbre.droite, chemin + [1]))
+    return chemins
+
+texte = "projetpython"
+arbre = construire_arbreB_Huffman(texte)
+chemins = trouver_chemins_feuilles(arbre, [])
+print(chemins)
+
+def test_construire_arbreB_Huffman():
+    """
+    Fonction de test de la fonction construire_arbreB_Huffman.
+    """
+    texte = "ProjetPython."
+    print("Texte :")
+    print(texte)
+    print("Occurence des lettres :")
+    print(occurence(texte))
+    print("Arbre de Huffman :")
+    print(construire_arbreB_Huffman(texte))
+
+test_construire_arbreB_Huffman()
+
+def test_interface_graphique_arbreB_Huffman():
     """
     Fonction de test de l'interface graphique.
     """
@@ -328,17 +422,12 @@ def test_interface_graphique():
     fenetre = tk.Tk()
     fenetre.title("Arbre binaire de recherche")
     # Création de l'arbre binaire de recherche
-    arbre = ArbreB(Sommet(8, "A"))
-    arbre += ArbreB(Sommet(5, "B"))
-    arbre += ArbreB(Sommet(10, "C"))
-    arbre += ArbreB(Sommet(2, "D"))
-    arbre += ArbreB(Sommet(3, "E"))
-    arbre += ArbreB(Sommet(9, "F"))
+    arbre = construire_arbreB_Huffman(texte)
     # Création de l'interface graphique
-    interface_graphique = ArbreBinaire(fenetre, arbre, width=800, height=600)
+    interface_graphique = ArbreBinaire(fenetre, arbre, t=texte, width=800, height=600)
     interface_graphique.pack()
     interface_graphique.afficher()
     # Affichage de la fenêtre
     fenetre.mainloop()
 
-test_interface_graphique()
+test_interface_graphique_arbreB_Huffman()
