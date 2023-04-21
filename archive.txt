@@ -454,6 +454,45 @@ class ArbreBinaire(tk.Canvas):
         else:
             return None
 
+class GUI2(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Dessin de l'arbre de Huffman")
+        self.geometry("990x365")
+        self.resizable(width=False, height=False)
+        self.largeur = 990
+        self.hauteur = 365
+        self.espacement_horiz = 50
+        self.espacement_vert = 100
+        self.diametre_cercle = 50
+        self.positions = {}
+        # Création du canvas
+        self.canvas_arbre_huffman = tk.Canvas(self, bg="white")
+
+        # Placement du canvas
+        self.canvas_arbre_huffman.pack(side="top", fill="both", expand=True)
+
+        # Création de la fonction de dessin de l'arbre de Huffman
+        def dessiner_arbre_huffman(self):
+            self.canvas_arbre_huffman.delete("all")
+            self.positions.clear()
+            self._dessiner_sous_arbre(arbre1, self.largeur / 2, 0, self.hauteur)
+
+        def _dessiner_sous_arbre(self, arbre, x, y, h):
+            if arbre is not None:
+                gauche = self._dessiner_sous_arbre(arbre.gauche, x - h, y + self.espacement_vert, h / 2)
+                droite = self._dessiner_sous_arbre(arbre.droite, x + h, y + self.espacement_vert, h / 2)
+                texte = self.create_text(x, y + self.diametre_cercle / 2, text=str(arbre.racine.valeur))
+                self.positions[arbre] = (x, y, texte)
+                if gauche is not None:
+                    self.create_line(x, y + self.diametre_cercle / 2, gauche[0], gauche[1] + self.diametre_cercle / 2, width=2)
+                if droite is not None:
+                    self.create_line(x, y + self.diametre_cercle / 2, droite[0], droite[1] + self.diametre_cercle / 2, width=2)
+                return x, y
+            else:
+                return None
+
+        dessiner_arbre_huffman(self)
 
 from fonctions_partie_2 import *
 
@@ -1192,3 +1231,146 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = GUI(root)
     root.mainloop()
+
+self.bouton_coder_texte = tk.Button(self, text="Coder texte", width = self.x*2, height=self.y, command=coder_texte)
+        self.label_texte_a_coder = tk.Label(self, text=f"Texte à coder : «{2+2}»", width=self.x*6, height=self.y)
+
+        self.label_arbre_huffman = tk.Label(self, text="Arbre de Huffman du texte à coder :", width=self.x*10, height=self.y, anchor="nw", justify="left")
+        self.canvas_arbre_huffman = tk.Canvas(self, width=self.x*10, height=self.y * 5, bg="grey")
+        self.label_texte_code = tk.Label(self, text=f"Texte codé : {2+2}", width=self.x*10, height=self.y, anchor="nw", justify="left")
+        
+        self.bouton_decoder_texte = tk.Button(self, text="Décoder texte", width = self.x*2, height=self.y, command=decoder_texte)
+        self.label_texte_a_decoder = tk.Label(self, text=f"Texte à décoder : {2+2}", width=self.x*6, height=self.y)
+        
+        self.label_texte_decode = tk.Label(self, text=f"Texte décodé : {2+2}", width=self.x*10, height=self.y)
+
+self.bouton_coder_texte.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self.label_texte_a_coder.grid(row=0, column=2, columnspan=6)
+        self.label_arbre_huffman.grid(row=1, column=0, columnspan=8)
+        self.canvas_arbre_huffman.grid(row=2, column=0, columnspan=8, rowspan=5)
+        self.label_texte_code.grid(row=7, column=0, columnspan=8)
+        self.bouton_decoder_texte.grid(row=8, column=0, columnspan=2)
+        self.label_texte_a_decoder.grid(row=8, column=2, columnspan=6)
+        self.label_texte_decode.grid(row=9, column=0, columnspan=8)
+    
+
+
+    def dessiner_arbre(arbre, x, y, dx):
+            if arbre is not None:
+                self.canvas_arbre_huffman.create_text(x, y, text=str(arbre.racine.valeur))
+                if arbre.gauche is not None:
+                    x0 = x - dx
+                    y0 = y + 60
+                    self.canvas_arbre_huffman.create_line(x, y, x0, y0)
+                    dessiner_arbre(arbre.gauche, x0, y0, dx/2)
+                if arbre.droite is not None:
+                    x1 = x + dx
+                    y1 = y + 60
+                    self.canvas_arbre_huffman.create_line(x, y, x1, y1)
+                    dessiner_arbre(arbre.droite, x1, y1, dx/2)
+    
+
+""" def _afficher_sous_arbre(self, arbre, x, y, h):
+        if arbre is not None:
+            gauche = self._afficher_sous_arbre(arbre.gauche, x - h, y + self.espacement_vert, h / 2)
+            droite = self._afficher_sous_arbre(arbre.droite, x + h, y + self.espacement_vert, h / 2)
+            #cercle = self.create_oval(x - self.diametre_cercle / 2, y, x + self.diametre_cercle / 2, y + self.diametre_cercle, fill="white", width=2)
+            texte = self.create_text(x, y + self.diametre_cercle / 2, text=str(arbre.racine.valeur))
+            #self.positions[arbre] = (x, y, cercle, texte)
+            self.positions[arbre] = (x, y, texte)
+            if gauche is not None:
+                self.create_line(x, y + self.diametre_cercle / 2, gauche[0], gauche[1] + self.diametre_cercle / 2, width=2)
+            if droite is not None:
+                self.create_line(x, y + self.diametre_cercle / 2, droite[0], droite[1] + self.diametre_cercle / 2, width=2)
+            return x, y
+        else:
+            return None """
+
+
+def test_interface_graphique_arbreB_Huffman():
+    """
+    Fonction de test de l'interface graphique.
+    """
+    # Création de la fenêtre
+    fenetre = tk.Tk()
+    fenetre.title("Arbre binaire de recherche")
+    # Création de l'arbre binaire de recherche
+    arbre = construire_arbreB_Huffman(texte)
+    # Création de l'interface graphique
+    interface_graphique = ArbreBinaire(fenetre, arbre, t=texte, width=800, height=600)
+    interface_graphique.pack()
+    interface_graphique.afficher()
+    # Affichage de la fenêtre
+    fenetre.mainloop()
+
+
+import tkinter as tk
+from main import *
+from math import atan2, cos, sin
+
+sommet_a = Sommet(8, "A")
+sommet_b = Sommet(2, "B")
+sommet_c = Sommet(7, "C")
+arbre1 = ArbreB(sommet_a)
+arbre1 += ArbreB(sommet_b)
+arbre1 += ArbreB(sommet_c)
+arbre1 += ArbreB(Sommet(1, "D"))
+arbre1 += ArbreB(Sommet(8, "E"))
+arbre1 += ArbreB(Sommet(6, "F"))
+arbre1 += ArbreB(Sommet(8, "G"))
+arbre1 += ArbreB(Sommet(0, "H"))
+arbre1 += ArbreB(Sommet(4, "I"))
+arbre1 += ArbreB(Sommet(9, "J"))
+
+
+test_construire_arbreB_Huffman()
+
+arbre2 = construire_arbreB_Huffman("Projet Python")
+
+class GUI2(tk.Canvas):
+    def __init__(self, master, arbre, *args, **kwargs):
+        tk.Canvas.__init__(self, master, *args, **kwargs)
+        self.arbre = arbre
+        self.width = 1000
+        self.height = 375
+        self.diametre_cercle = 80
+        self.espacement_horiz = 8
+        self.espacement_vert = 50
+        self.positions = {}
+
+    def afficher(self):
+        self.delete(tk.ALL)
+        self.positions.clear()
+        self._afficher_sous_arbre(self.arbre, self.width / 2, 10, self.width / 4)
+    
+    def _afficher_sous_arbre(self, arbre, x, y, h):
+        offset = 17
+        if arbre is not None:
+            gauche = self._afficher_sous_arbre(arbre.gauche, x - h, y + self.espacement_vert, h / 2)
+            droite = self._afficher_sous_arbre(arbre.droite, x + h, y + self.espacement_vert, h / 2)
+            texte = self.create_text(x, y + self.diametre_cercle / 2, text=("{:.0%}".format(arbre.racine.valeur)))
+            if arbre.racine.lettre is not None:
+                texte = self.create_text(x, y + self.diametre_cercle / 2 + 15, text=arbre.racine.lettre)
+            self.positions[arbre] = (x, y, texte)
+            if gauche is not None:
+                angle = atan2(gauche[1] - y - self.diametre_cercle / 2, gauche[0] - x)
+                x1 = x + offset * cos(angle)
+                y1 = y + self.diametre_cercle / 2 + offset * sin(angle)
+                x2 = gauche[0] - offset * cos(angle)
+                y2 = gauche[1] + self.diametre_cercle / 2 - offset * sin(angle)
+                self.create_line(x1, y1, x2, y2, width=2)
+            if droite is not None:
+                angle = atan2(droite[1] - y - self.diametre_cercle / 2, droite[0] - x)
+                x1 = x + offset * cos(angle)
+                y1 = y + self.diametre_cercle / 2 + offset * sin(angle)
+                x2 = droite[0] - offset * cos(angle)
+                y2 = droite[1] + self.diametre_cercle / 2 - offset * sin(angle)
+                self.create_line(x1, y1, x2, y2, width=2)
+            return x, y
+        else:
+            return None
+
+GUI = GUI2(tk.Tk(), arbre2)
+GUI.place(x=500, y=187.5, width=1000, height=375, anchor="center")  # modification ici
+GUI.afficher()
+GUI.mainloop()
