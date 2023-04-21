@@ -1,5 +1,4 @@
 import tkinter as tk
-import math
 
 # PARTIE 1
 
@@ -270,74 +269,94 @@ def test_arbre_binaire():
 
 # Question 1.4 - Développer une interface graphique pour la représentation de l'arbre binaire de recherche.
 
-class ArbreBinaire(tk.Canvas):
-    def __init__(self, master, arbre, t=None, *args, **kwargs):
-        """
-        Constructeur de la classe ArbreBinaire.
-        :param master: La fenêtre parente.
-        :param arbre: L'arbre binaire de recherche à afficher.
-        :param args: Arguments supplémentaires.
-        :param kwargs: Arguments nommés supplémentaires.
-        """
-        tk.Canvas.__init__(self, master, *args, **kwargs)
-        self.arbre = arbre
-        self.width = 800
-        self.height = 600
-        self.diametre_cercle = 50
-        self.espacement_horiz = 50
-        self.espacement_vert = 100
-        self.positions = {}
-        self.t = t
+import tkinter as tk
 
-    def afficher(self):
-        """
-        Affiche l'arbre binaire de recherche.
-        """
-        self.delete(tk.ALL) # Efface le contenu de la zone de dessin
-        self.positions.clear() # Vide le dictionnaire des positions
-        self._afficher_sous_arbre(self.arbre, self.width / 2, 0, self.width / 4) # Affiche le sous-arbre
-        x1, y1, x2, y2 = self.bbox(tk.ALL) # Récupère les coordonnées de la zone de dessin
-        self.configure(width=x2-x1+100, height=y2-y1+200) # Redimensionne la zone de dessin
-        self.xview_moveto((x1-50)/(x2-x1+100)) # Centre la zone de dessin
-        self.yview_moveto(0) # Place la zone de dessin en haut
-        chemins = trouver_chemins_feuilles(self.arbre, []) # Récupère les chemins des feuilles
-        texte = "Codage de Huffman : " + ''.join([str(chiffre) for lettre in self.t for chiffre in chemins[lettre]]) # Crée le texte à afficher
-        self.create_text(self.width / 2, y2 + 50, text=texte) # Affiche le texte
+class GUI(tk.Tk):
+    x = 125
+    y = 75
 
-    def _afficher_sous_arbre(self, arbre, x, y, h):
-        """
-        Affiche un sous-arbre de l'arbre binaire de recherche.
-        :param arbre: Le sous-arbre à afficher.
-        :param x: La position horizontale du sous-arbre.
-        :param y: La position verticale du sous-arbre.
-        :param h: La hauteur du sous-arbre.
-        :return: Le sous-arbre à afficher.
-        """
-        if arbre is not None: # Si l'arbre n'est pas vide
-            gauche = self._afficher_sous_arbre(arbre.gauche, x - h, y + self.espacement_vert, h / 2) # Affiche le sous-arbre gauche
-            droite = self._afficher_sous_arbre(arbre.droite, x + h, y + self.espacement_vert, h / 2) # Affiche le sous-arbre droit
-            cercle = self.create_oval(x - self.diametre_cercle / 2, y, x + self.diametre_cercle / 2,
-                                    y + self.diametre_cercle, fill="white", width=2) # Crée le cercle
-            texte = self.create_text(x, y + self.diametre_cercle / 2,
-                                    text=("{:.2%}".format(arbre.racine.valeur), arbre.racine.lettre if arbre.racine.lettre is not None else "")) # Crée le texte
-            self.positions[arbre] = (x, y, cercle, texte) # Ajoute la position de l'arbre dans le dictionnaire
-            if gauche is not None: # Si le sous-arbre gauche n'est pas vide
-                angle = math.atan2(gauche[1] - (y + self.diametre_cercle / 2), gauche[0] - x) # Calcule l'angle de la ligne à tracer entre les deux sous-arbres (en radians)
-                x1 = x + (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point de départ
-                y1 = (y + self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point de départ
-                x2 = gauche[0] - (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point d'arrivée
-                y2 = gauche[1] + (self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point d'arrivée
-                self.create_line(x1, y1, x2, y2, width=2) # Trace la ligne entre les deux sous-arbres
-            if droite is not None: # Si le sous-arbre droit n'est pas vide
-                angle = math.atan2(droite[1] - (y + self.diametre_cercle / 2), droite[0] - x) # Calcule l'angle de la ligne à tracer entre les deux sous-arbres (en radians)
-                x1 = x + (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point de départ
-                y1 = (y + self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point de départ
-                x2 = droite[0] - (self.diametre_cercle / 2) * math.cos(angle) # Calcule la position horizontale du point d'arrivée
-                y2 = droite[1] + (self.diametre_cercle / 2) + (self.diametre_cercle / 2) * math.sin(angle) # Calcule la position verticale du point d'arrivée
-                self.create_line(x1, y1, x2, y2, width=2) # Trace la ligne entre les deux sous-arbres
-            return x, y # Retourne la position de l'arbre
-        else: # Si l'arbre est vide
-            return None # Retourne None
+    def __init__(self):
+        super().__init__()
+        self.title("Codage de Huffman")
+        self.geometry("1000x750")
+        self.resizable(width=False, height=False)
+
+        # Définition des variables globales
+        texte_a_coder = ""
+
+        # Définition des fonctions des boutons
+        def coder_texte():
+            fenetre_coder = tk.Toplevel(width=500, height=225)
+            fenetre_coder.title("Coder texte")
+            fenetre_coder.resizable(width=False, height=False)
+            
+            label_texte_a_coder = tk.Label(fenetre_coder, text="Texte à coder avec le codage de Huffman :")
+            label_texte_a_coder.place(x=125*2, y=75, width=125*4-10, height=75-10, anchor="center")
+            
+            entry_texte_a_coder = tk.Entry(fenetre_coder)
+            entry_texte_a_coder.place(x=125*2, y=75*2, width=125*4-10, height=75, anchor="center")
+            
+            def on_enter(event):
+                nonlocal texte_a_coder
+                texte_a_coder = entry_texte_a_coder.get()
+                fenetre_coder.destroy()
+            
+            entry_texte_a_coder.bind("<Return>", on_enter)
+            fenetre_coder.wait_window(fenetre_coder)
+            
+            self.label_texte_a_coder.configure(text=f"Texte à coder : «{texte_a_coder}»")
+        
+        def fermer_fenetre_coder(event, fenetre_coder):
+            global texte_a_coder
+            texte_a_coder = event.widget.get()
+            self.label_texte_a_coder.config(text=f"Texte à coder : «{texte_a_coder}»")
+            fenetre_coder.destroy()
+
+        def decoder_texte():
+            pass
+
+        # Création des widgets
+        self.bouton_coder_texte = tk.Button(self, text="Coder texte", command=coder_texte)
+        self.label_texte_a_coder = tk.Label(self, text=f"Texte à coder : «{texte_a_coder}»")
+
+
+        self.label_arbre_huffman = tk.Label(self, text="Arbre de Huffman du texte à coder :", anchor="w", justify="left")
+        self.canvas_arbre_huffman = tk.Canvas(self, bg="grey")
+        self.label_texte_code = tk.Label(self, text=f"Texte codé : {2+2}", anchor="w", justify="left")
+        
+        self.bouton_decoder_texte = tk.Button(self, text="Décoder texte", command=decoder_texte)
+        self.label_texte_a_decoder = tk.Label(self, text=f"Texte à décoder : {2+2}")
+        
+        self.label_texte_decode = tk.Label(self, text=f"Texte décodé : {2+2}")
+
+        # Création des lignes
+        self.frame_ligne_1 = tk.Frame(self, width=1, height=75, bg="black")
+        self.frame_ligne_2 = tk.Frame(self, width=1000, height=1, bg="black")
+        self.frame_ligne_3 = tk.Frame(self, width=1000, height=1, bg="black")
+        self.frame_ligne_4 = tk.Frame(self, width=1, height=75, bg="black")
+        self.frame_ligne_5 = tk.Frame(self, width=1000, height=1, bg="black")
+
+        # Placement des lignes
+        self.frame_ligne_1.place(x=125*2, y=0, width=1, height=75, anchor="nw")
+        self.frame_ligne_2.place(x=0, y=75, width=1000, height=1, anchor="nw")
+        self.frame_ligne_3.place(x=0, y=75*8, width=1000, height=1, anchor="nw")
+        self.frame_ligne_4.place(x=125*2, y=75*8, width=1, height=75, anchor="nw")
+        self.frame_ligne_5.place(x=0, y=75*9, width=1000, height=1, anchor="nw")
+
+        # Placement des widgets
+        self.bouton_coder_texte.place(x=125, y=75/2, width=125*2-10, height=75-10, anchor="center")
+        self.label_texte_a_coder.place(x=125*5, y=75/2, width=125*6-10, height=75-10, anchor="center")
+        
+        self.label_arbre_huffman.place(x=125*4, y=75+75/2, width=125*8-10, height=75-10, anchor="center")
+        self.canvas_arbre_huffman.place(x=125*4, y=75*4.5, width=125*8-10, height=75*5-10, anchor="center")
+        self.label_texte_code.place(x=125*4, y=75*7+75/2, width=125*8-10, height=75-10, anchor="center")
+        
+        self.bouton_decoder_texte.place(x=125, y=75*8+75/2, width=125*2-10, height=75-10, anchor="center")
+        self.label_texte_a_decoder.place(x=125*5, y=75*8+75/2, width=125*6-10, height=75-10, anchor="center")
+        self.label_texte_decode.place(x=125*4, y=75*9+75/2, width=125*8-10, height=75-10, anchor="center")
+interface_graphique = GUI()
+interface_graphique.mainloop()
+
 
 # PARTIE 2
 
@@ -395,11 +414,6 @@ def trouver_chemins_feuilles(arbre, chemin):
     chemins.update(trouver_chemins_feuilles(arbre.droite, chemin + [1]))
     return chemins
 
-texte = "projetpython"
-arbre = construire_arbreB_Huffman(texte)
-chemins = trouver_chemins_feuilles(arbre, [])
-print(chemins)
-
 def test_construire_arbreB_Huffman():
     """
     Fonction de test de la fonction construire_arbreB_Huffman.
@@ -412,7 +426,7 @@ def test_construire_arbreB_Huffman():
     print("Arbre de Huffman :")
     print(construire_arbreB_Huffman(texte))
 
-test_construire_arbreB_Huffman()
+#test_construire_arbreB_Huffman()
 
 def test_interface_graphique_arbreB_Huffman():
     """
@@ -430,4 +444,68 @@ def test_interface_graphique_arbreB_Huffman():
     # Affichage de la fenêtre
     fenetre.mainloop()
 
-test_interface_graphique_arbreB_Huffman()
+def verifier_texte_huffman(texte_code, arbre_huffman):
+    """
+    Vérifie si un texte a été codé selon l'arbre de Huffman.
+    :param texte_code: Le texte codé à vérifier.
+    :param arbre_huffman: L'arbre de Huffman utilisé pour vérifier le texte.
+    :return: True si le texte a été codé selon l'arbre de Huffman, False sinon.
+    """
+    chemins_feuilles = trouver_chemins_feuilles(arbre_huffman, [])
+    chemin_actuel = []
+    for caractere in texte_code:
+        chemin_actuel.append(int(caractere))
+        if chemin_actuel in chemins_feuilles.values():
+            chemin_actuel = []
+    return len(chemin_actuel) == 0
+
+def test_verifier_texte_huffman():
+    texte = "projetpython"
+    arbre_huffman = construire_arbreB_Huffman(texte)
+    chemins_feuilles = trouver_chemins_feuilles(arbre_huffman, [])
+    texte_code = ''.join([str(chiffre) for lettre in texte for chiffre in chemins_feuilles[lettre]])
+    texte_code_invalide = "01010101010101"
+
+    print("Texte original :", texte)
+    print("Texte codé selon Huffman :", texte_code)
+    print("Texte invalide :", texte_code_invalide)
+
+    print("Vérification du texte codé selon Huffman :", verifier_texte_huffman(texte_code, arbre_huffman))
+    print("Vérification du texte invalide :", verifier_texte_huffman(texte_code_invalide, arbre_huffman))
+
+#test_verifier_texte_huffman()
+
+def decoder_texte_huffman(texte_code, arbre_huffman):
+    """
+    Décode un texte codé selon Huffman en utilisant l'arbre de Huffman.
+    :param texte_code: Le texte codé selon Huffman.
+    :param arbre_huffman: L'arbre de Huffman utilisé pour décoder le texte.
+    :return: Le texte décodé.
+    """
+    chemins_feuilles = trouver_chemins_feuilles(arbre_huffman, [])
+    texte_decode = ""
+    chemin_actuel = []
+    for caractere in texte_code:
+        chemin_actuel.append(int(caractere))
+        for lettre, chemin in chemins_feuilles.items():
+            if chemin == chemin_actuel:
+                texte_decode += lettre
+                chemin_actuel = []
+                break
+    return texte_decode
+
+def test_decoder_texte_huffman():
+    """
+    Fonction de test de la fonction decoder_texte_huffman.
+    """
+    texte = "projetpython"
+    arbre_huffman = construire_arbreB_Huffman(texte)
+    chemins_feuilles = trouver_chemins_feuilles(arbre_huffman, [])
+    texte_code = ''.join([str(chiffre) for lettre in texte for chiffre in chemins_feuilles[lettre]])
+    texte_decode = decoder_texte_huffman(texte_code, arbre_huffman)
+
+    print("Texte original :", texte)
+    print("Texte codé selon Huffman :", texte_code)
+    print("Texte décodé :", texte_decode)
+
+#test_decoder_texte_huffman()
